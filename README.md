@@ -1,3 +1,3 @@
 # PEF_K_proj_stego
 
-pip install -t requirements.txt
+pip install -r requirements.txt
