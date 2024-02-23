@@ -43,7 +43,7 @@ class App:
         self.label_message = tk.Label(self.root, text='Message')
         self.label_message.grid(row=1, column=0)
         self.message = tk.Text(self.root, wrap="word", height=5, width=80)  # Multiline Text widget
-        self.message.grid(row=1, column=1, rowspan=2)
+        self.message.grid(row=1, column=1, rowspan=3)
         self.message.insert(1.0, init_message)
         
         self.button_encode = tk.Button(self.root, text='Encode', command=self.encode)
@@ -51,14 +51,22 @@ class App:
         self.button_encode = tk.Button(self.root, text='Decode', command=self.decode)
         self.button_encode.grid(row=2, column=2)
         
+        self.loading_info = tk.Label(self.root, text='', font=('Arial', 8))
+        self.loading_info.grid(row=3, column=2)
+        self.loading_info.config(fg='red')
+        
         self.label_output = tk.Label(self.root, text='Log')
-        self.label_output.grid(row=3, column=0)
+        self.label_output.grid(row=4, column=0)
         self.text_output = tk.Text(self.root, height=10, width=80)
-        self.text_output.grid(row=3, column=1, columnspan=1)
+        self.text_output.grid(row=4, column=1, columnspan=1)
         
         self.image = ImageTk.PhotoImage(Image.new('RGB', (400, 400), (255, 255, 255)))
         self.label_image = tk.Label(self.root, image=self.image)
-        self.label_image.grid(row=4, column=0, columnspan=3)
+        self.label_image.grid(row=5, column=0, columnspan=3)
+        
+    
+    def show_loading(self) -> None: self.loading_info.config(text='Loading ...')
+    def hide_loading(self) -> None: self.loading_info.config(text='')
         
             
     def log(self, message: str) -> None:
@@ -94,7 +102,11 @@ class App:
             return
         
         message = self.message.get(1.0, tk.END)
+        self.log('Encoding ...')
+        self.show_loading()
+        self.root.update()
         state, message = self.encode_image(image, message)
+        self.hide_loading()
         if state:
             self.log('Message encoded successfully')
                 
@@ -116,7 +128,6 @@ class App:
             self.log('Message could NOT be encoded')
             
             
-            
     def decode(self):
         image = None
         try:
@@ -126,7 +137,11 @@ class App:
             self.log('Image could NOT be opened' + '\n' + str(e))
             return
         
+        self.log('Decoding ...')
+        self.show_loading()
+        self.root.update()
         state, message = self.decode_image(image)
+        self.hide_loading()
         if state:
             self.log('Message decoded successfully')
             self.message.delete(1.0, tk.END)
@@ -223,25 +238,83 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('-m', '--message', type=str, default='', help='Message')
-    parser.add_argument('-e', '--encode', type=str, default='', help='Encode message')
-    parser.add_argument('-d', '--decode', type=str, default='', help='Decode message')
+    parser.add_argument('-e', '--encode', action='store_true', default='', help='Encode message')
+    parser.add_argument('-d', '--decode', action='store_true', default='', help='Decode message')
     parser.add_argument('-i', '--image', type=str, default='', help='Image path')
+    parser.add_argument('-o', '--output', type=str, default='', help='Output path')
     parser.add_argument('-t', '--test', action='store_true', help='Run tests')
     parser.add_argument('-g', '--gui', action='store_true', help='Run GUI')
     args = parser.parse_args()
+    
+    if args.test:
+        test_encoding_message()
+        test_encoding_message_to_image()
+        
+    if args.encode:
+        if args.message:
+            if args.image and args.output:
+                image = None
+                try:
+                    image = cv2.imread(args.image)
+                    
+                except Exception as e:
+                    print('Image could NOT be opened' + '\n' + str(e))
+                    sys.exit(1)
+                    
+                state, message = App.encode_image(image, args.message)
+                if state:
+                    print('Message encoded into image successfully')
+                    try:
+                        cv2.imwrite(args.output, image)
+                        print('Image saved successfully')
+                        
+                    except Exception as e:
+                        print('Image could NOT be saved' + '\n' + str(e))
+                    
+                else:
+                    print(message)
+                    print('Message could NOT be encoded')
+            
+            if args.image and not args.output:
+                print('Please provide a valid output path')
+                
+            if not args.image and args.output:
+                print('Please provide a valid image path')
+            
+            if not args.image and not args.output:
+                print(App.encode_message_to_binary(args.message))
+        
+        else:
+            print('Please provide a message to encode')
+    
+    if args.decode:
+        if args.image:
+            image = None
+            try:
+                image = cv2.imread(args.image)
+                
+            except Exception as e:
+                print('Image could NOT be opened' + '\n' + str(e))
+                sys.exit(1)
+                
+            state, message = App.decode_image(image)
+            if state:
+                print('Message decoded successfully:')
+                print(message)
+                
+            else:
+                print(message)
+                print('Message could NOT be decoded')
+            
+        else:
+            if args.message:
+                print(App.decode_binary_to_message(args.message))
+                
+            else:
+                print('Please provide a message or an image to decode')
     
     if len(sys.argv) <= 1 or args.gui:
         root = tk.Tk()
         app = App(root)
         root.mainloop()
         
-    elif args.test:
-        test_encoding_message()
-        test_encoding_message_to_image()
-        
-    elif args.message:
-        print(App.encode_message_to_binary(args.message))
-    
-    
-    
-    
