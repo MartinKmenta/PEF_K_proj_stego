@@ -2,38 +2,37 @@
 
 python 3 and pip required
 
-
 use following command to install dependencies:
 `pip install -r requirements.txt`
 
 usage:
 `python main.py -h`
+
 ```
-usage: main.py [-h] [-m MESSAGE] [-e ENCODE] [-d DECODE] [-i IMAGE] [-o OUTPUT] [-t] [-g]
+usage: main.py [-h] [-m MESSAGE] [-e] [-d] [-i IMAGE] [-o OUTPUT] [-t] [-g]
 
 options:
   -h, --help            show this help message and exit
   -m MESSAGE, --message MESSAGE
                         Message
-  -e ENCODE, --encode ENCODE
-                        Encode message
-  -d DECODE, --decode DECODE
-                        Decode message
+  -e, --encode          Encode message
+  -d, --decode          Decode message
   -i IMAGE, --image IMAGE
                         Image path
   -o OUTPUT, --output OUTPUT
                         Output path
   -t, --test            Run tests
   -g, --gui             Run GUI
-  ```
+```
 
-examples:
+usage examples:
+
 - show help
-  - `python main.py -h` 
+  - `python main.py -h`
 - run test
   - `python main.py -t`
 - open gui
-  - `python main.py -g` 
+  - `python main.py -g`
 - encode text to bytes
   - `python main.py -e -m "Hello, World!"`
 - decode text from binary

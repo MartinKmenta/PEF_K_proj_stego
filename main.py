@@ -1,23 +1,18 @@
 from typing import Tuple
 
+import sys
 import cv2
 import numpy as np
-import os
 import tkinter as tk
 from tkinter import filedialog
-from tkinter import messagebox
 from PIL import Image, ImageTk
-import cv2
-import numpy as np
-import os
-import sys
-import io
-import base64
-import main
+from argparse import ArgumentParser
 from tqdm import tqdm
+    
     
 images_path = 'images'
 init_message = 'Hello, World! 🌍'
+
 
 class App:
     def __init__(self, root):
@@ -234,8 +229,6 @@ def test_encoding_message_to_image():
 
 
 if __name__ == '__main__':
-    
-    from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('-m', '--message', type=str, default='', help='Message')
     parser.add_argument('-e', '--encode', action='store_true', default='', help='Encode message')
