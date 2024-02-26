@@ -40,4 +40,4 @@ usage examples:
 - encode to image
   - `python main.py -e -m "Hello, World!" -i images/dalle_duck.png -o images/script_out.png`
 - decode from image
-  - `python main.py -d -m "Hello, World!" -i images/encoded_image.png`
+  - `python main.py -d -i images/encoded_image.png`

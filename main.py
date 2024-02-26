@@ -71,7 +71,8 @@ class App:
     
     
     def browse_image(self):
-        self.img_path.set(filedialog.askopenfilename(initialdir=images_path))
+        self.img_path.set(filedialog.askopenfilename(initialdir=images_path, 
+                    title='Select Image', filetypes=[('PNG', '*.png'), ('BMP', '*.bmp')]))
         image = None
         try:
             image = Image.open(self.img_path.get())
@@ -174,6 +175,9 @@ class App:
         except UnicodeEncodeError as e:
             return (False, str(e))
         
+        if len(encoded_message) > img.shape[0] * img.shape[1] * 3:
+            return (False, 'Message is too large for the image.')
+        
         index = 0
         progress = tqdm(total=len(encoded_message))
         for i in range(0, img.shape[0]):
@@ -228,6 +232,33 @@ def test_encoding_message_to_image():
     print('Test test_encoding_message_to_image passed!')
 
 
+def test_encoding_long_message():
+    message = 'Hello, World! 🌍' * 42 * 42
+    img = cv2.imread('images/dalle_duck.png')
+    state1, _ = App.encode_image(img, message)
+    assert state1
+    state2, message2 = App.decode_image(img)
+    assert state2
+    assert message == message2
+    print('Test test_encoding_long_message passed!')
+
+
+def test_encoding_too_long_message():
+    message = 'Hello, World! 🌍' * 42 * 42 * 42
+    img = cv2.imread('images/dalle_duck.png')
+    state1, _ = App.encode_image(img, message)
+    assert not state1
+    print('Test test_encoding_too_long_message passed!')
+    
+
+def tests():
+    test_encoding_message()
+    test_encoding_message_to_image()
+    test_encoding_long_message()
+    test_encoding_too_long_message()
+    print('All tests passed!')
+
+
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('-m', '--message', type=str, default='', help='Message')
@@ -240,8 +271,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     if args.test:
-        test_encoding_message()
-        test_encoding_message_to_image()
+        tests()
         
     if args.encode:
         if args.message:
