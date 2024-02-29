@@ -86,6 +86,7 @@ class App:
         
         self.image = image
         self.label_image.config(image=self.image)
+        self.log('Image loaded successfully')
         
         
     def encode(self):

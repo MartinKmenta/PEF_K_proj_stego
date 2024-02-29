@@ -1,6 +1,12 @@
 # PEF_K_proj_stego
 
-python 3 and pip required
+python 3.10+ and pip required
+
+
+[Github repository: https://github.com/MartinKmenta/PEF_K_proj_stego](https://github.com/MartinKmenta/PEF_K_proj_stego)
+
+[Documentation: https://www.overleaf.com/read/kbfjsbdkcjwv#f0906f](https://www.overleaf.com/read/kbfjsbdkcjwv#f0906f)
+
 
 use following command to install dependencies:
 `pip install -r requirements.txt`
